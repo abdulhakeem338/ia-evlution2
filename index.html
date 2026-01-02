@@ -1,0 +1,1195 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>أداة التدقيق والتقييم</title>
+  
+  <style>
+    :root {
+      --primary-bg: #f8f9fa;
+      --secondary-bg: #ffffff;
+      --primary-text: #212529;
+      --secondary-text: #6c757d;
+      --border-color: #dee2e6;
+      --accent-color: #007bff;
+      --accent-hover: #0056b3;
+      --header-color: #f59e0b;
+      --green: #28a745;
+      --gold: #ffc107;
+      --red: #dc3545;
+      --grey: #6c757d;
+      --black: #212529;
+      --green-bg: #e9f5ec;
+      --gold-bg: #fff8e1;
+      --red-bg: #fbe9e7;
+      --grey-bg: #f1f3f5;
+    }
+
+    .dark-mode {
+      --primary-bg: #121212;
+      --secondary-bg: #1e1e1e;
+      --primary-text: #e0e0e0;
+      --secondary-text: #a0a0a0;
+      --border-color: #444444;
+      --accent-color: #3a9aed;
+      --accent-hover: #6cacff;
+      --green-bg: #1a3c23;
+      --gold-bg: #4d3800;
+      --red-bg: #4d1a1a;
+      --grey-bg: #3a3d40;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+      background-color: var(--primary-bg);
+      color: var(--primary-text);
+      line-height: 1.6;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    
+    #root {
+        padding: 1rem;
+    }
+
+    .container {
+        max-width: 1800px;
+        margin: auto;
+        padding: 1rem;
+    }
+
+    .header {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--border-color);
+        gap: 1rem;
+    }
+
+    .header h1 {
+        color: var(--header-color);
+        font-size: 1.8rem;
+    }
+    
+    .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    button, .file-input-label {
+        background-color: var(--accent-color);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.25rem;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: background-color 0.2s;
+        font-weight: bold;
+    }
+
+    button:hover, .file-input-label:hover {
+        background-color: var(--accent-hover);
+    }
+    
+    button.secondary {
+        background-color: var(--secondary-text);
+    }
+    
+    button.secondary:hover {
+        background-color: var(--primary-text);
+    }
+
+    .file-input-container {
+        position: relative;
+    }
+    
+    input[type="file"] {
+        display: none;
+    }
+
+    .loader {
+        border: 4px solid var(--border-color);
+        border-top: 4px solid var(--accent-color);
+        border-radius: 50%;
+        width: 28px;
+        height: 28px;
+        animation: spin 1s linear infinite;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        margin-top: -14px;
+        margin-left: -14px;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .tabs {
+        display: flex;
+        flex-wrap: wrap;
+        border-bottom: 2px solid var(--border-color);
+        margin-bottom: 1.5rem;
+    }
+
+    .tab-button {
+        padding: 0.75rem 1.5rem;
+        cursor: pointer;
+        border: none;
+        background-color: transparent;
+        color: var(--secondary-text);
+        font-size: 1.1rem;
+        font-weight: 500;
+        border-bottom: 3px solid transparent;
+        transition: color 0.2s, border-color 0.2s;
+    }
+
+    .tab-button.active {
+        color: var(--accent-color);
+        border-bottom-color: var(--accent-color);
+    }
+
+    .tab-content {
+        animation: fadeIn 0.5s;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
+    .filters-container {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+    }
+
+    .filters-container select {
+        min-width: 200px;
+        flex: 1;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .table-container {
+        overflow-x: auto;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        border-radius: 8px;
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        background-color: var(--secondary-bg);
+    }
+
+    th, td {
+        padding: 0.8rem;
+        text-align: right;
+        border: 1px solid var(--border-color);
+    }
+    
+    thead th {
+        background-color: var(--primary-bg);
+        font-weight: bold;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+
+    /* Tooltip styles */
+    .has-tooltip {
+        position: relative;
+        cursor: help;
+        text-decoration: underline dotted var(--secondary-text);
+    }
+
+    .aggregated-notes-table thead th {
+        background-color: var(--header-color);
+        color: white;
+    }
+
+    .aggregated-notes-table {
+        table-layout: fixed;
+    }
+    
+    .aggregated-notes-table td {
+        vertical-align: top;
+        word-wrap: break-word;
+    }
+
+    select, textarea {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        background-color: var(--secondary-bg);
+        color: var(--primary-text);
+        font-size: 0.95rem;
+    }
+
+    select:disabled {
+        background-color: var(--grey-bg);
+        cursor: not-allowed;
+    }
+
+    select.score-3 { background-color: var(--green-bg); border-color: var(--green); }
+    select.score-2 { background-color: var(--gold-bg); border-color: var(--gold); }
+    select.score-1 { background-color: var(--red-bg); border-color: var(--red); }
+    select.score-0 { background-color: var(--grey-bg); border-color: var(--grey); }
+
+    .score-badge {
+        display: inline-block;
+        padding: 0.3em 0.6em;
+        border-radius: 9999px;
+        font-weight: bold;
+        color: var(--primary-text);
+        font-size: 0.85rem;
+    }
+    .score-badge-3 { background-color: var(--green); color: white; }
+    .score-badge-2 { background-color: var(--gold); }
+    .score-badge-1 { background-color: var(--red); color: white; }
+    .score-badge-0 { background-color: var(--grey); color: white; }
+    
+    .chart-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 2rem;
+    }
+    
+    .chart-container {
+        background-color: var(--secondary-bg);
+        padding: 1.5rem;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+    }
+    
+    .detailed-results-grid {
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 1.5rem;
+        overflow-x: auto;
+        padding-bottom: 1rem;
+    }
+    
+    .detailed-table-wrapper {
+        flex: 1 0 420px;
+        min-width: 380px;
+    }
+    
+    .detailed-table {
+        border: 2px solid #826700;
+    }
+
+    .detailed-table th, .detailed-table td {
+        border: 1px solid #826700;
+        padding: 0.6rem;
+        text-align: right;
+        vertical-align: middle;
+    }
+    
+    .detailed-table .domain-header {
+        background-color: #FFD757;
+        color: var(--black);
+        font-size: 1.2rem;
+        text-align: center;
+        padding: 0.8rem;
+    }
+    
+    .detailed-table thead tr:nth-child(2) th {
+        background-color: #826700;
+        color: white;
+        font-weight: bold;
+    }
+    
+    .detailed-table .principle-row td {
+        background-color: #FFF3CD;
+        font-weight: bold;
+        text-align: center;
+        color: var(--black);
+    }
+    
+    .detailed-table tbody td:nth-child(1) { width: 15%; text-align: center; }
+    .detailed-table tbody td:nth-child(2) { width: 70%; }
+    .detailed-table tbody td:nth-child(3) { width: 15%; text-align: center; }
+
+    .score-dot {
+        height: 18px;
+        width: 18px;
+        border-radius: 50%;
+        display: inline-block;
+        margin: 0 auto;
+    }
+
+    .score-dot-3 { background-color: var(--green); }
+    .score-dot-2 { background-color: var(--gold); }
+    .score-dot-1 { background-color: var(--red); }
+    .score-dot-0 { background-color: var(--black); }
+
+    @media (max-width: 768px) {
+        .header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .chart-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+  </style>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "xlsx": "https://aistudiocdn.com/xlsx@^0.18.5",
+    "chart.js/": "https://aistudiocdn.com/chart.js@^4.5.1/",
+    "chart.js": "https://aistudiocdn.com/chart.js@^4.5.1",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/"
+  }
+}
+</script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="text/babel" data-type="module">
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import ReactDOM from 'react-dom/client';
+import * as XLSX from 'xlsx';
+import Chart from 'chart.js/auto';
+
+// --- Type Definitions (for reference, not executed) ---
+/*
+interface StandardItem {
+  id: number;
+  domain: string;
+  principle: string;
+  standardNo: string;
+  standardName: string;
+  standardText: string;
+  evidence: string;
+  evaluation: string;
+  score: number;
+  notes: string;
+  recommendation: string;
+}
+*/
+
+// --- Data Constants ---
+const initialData = [
+      {"id":101,"domain":"الأخلاقية المهنية","principle":"مبدأ إظهار النزاهة","standardNo":"1.1","standardName":"الصدق والشجاعة المهنية","standardText":"يجب على المدققين الداخليين أداء عملهم بأمانة وشجاعة مهنية. يجب أن يكون المدققون الداخليين صادقين ودقيقين وواضحين ومنفتحين ومحترمين في جميع العلاقات والاتصالات المهنية، حتى عند التعبير عن الشكوك أو تقديم وجهة نظر معارضة. يجب على المدققين الداخليين عدم الإد","evidence":"","evaluation":"كلي","score":3,"notes":"","recommendation":""},
+      {"id":102,"domain":"الأخلاقية المهنية","principle":"مبدأ إظهار النزاهة","standardNo":"2.1","standardName":"التوقعات الأخلاقية للمؤسسة","standardText":"يجب على المدققين الداخليين فهم التوقعات الأخلاقية للمؤسسة والمساهمة في تحقيقها.","evidence":"","evaluation":"كلي","score":3,"notes":"","recommendation":""},
+      {"id":103,"domain":"الأخلاقية المهنية","principle":"مبدأ إظهار النزاهة","standardNo":"3.1","standardName":"السلوك القانوني والأخلاقي","standardText":"يجب على المدققين الداخليين الالتزام بالقوانين واللوائح المعمول بها والتصرف بطريقة أخلاقية في جميع الأوقات.","evidence":"","evaluation":"جزئي","score":2,"notes":"","recommendation":""},
+      {"id":104,"domain":"الأخلاقية المهنية","principle":"مبدأ الحفاظ على الموضوعية","standardNo":"1.2","standardName":"الموضوعية الفردية","standardText":"يجب أن يحافظ المدققون الداخليون على موقف غير متحيز يسمح لهم بأداء مهامهم بطريقة تجعلهم يؤمنون بعملهم وبأنه لم يتم تقديم أي تنازلات هامة تتعلق بالجودة.","evidence":"","evaluation":"كلي","score":3,"notes":"","recommendation":""},
+      {"id":105,"domain":"الأخلاقية المهنية","principle":"مبدأ الحفاظ على الموضوعية","standardNo":"2.2","standardName":"حماية الموضوعية","standardText":"يجب على المدققين الداخليين أن يكونوا مدركين للعوامل التي قد تضعف الموضوعية، مثل تضارب المصالح، واتخاذ خطوات للحماية منها.","evidence":"","evaluation":"كلي","score":3,"notes":"","recommendation":""},
+      {"id":106,"domain":"الأخلاقية المهنية","principle":"مبدأ الحفاظ على الموضوعية","standardNo":"3.2","standardName":"الافصاح عن معوقات الموضوعية","standardText":"يجب الإفصاح عن أي ضعف فعلي أو محتمل في الموضوعية للأطراف المناسبة.","evidence":"","evaluation":"كلي","score":3,"notes":"","recommendation":""},
+      {"id":107,"domain":"الأخلاقية المهنية","principle":"مبدأ إثبات الكفاءة","standardNo":"1.3","standardName":"الكفاءة","standardText":"يجب أن يمتلك المدققون الداخليون المعرفة والمهارات والقدرات الأخرى اللازمة للوفاء بمسؤولياتهم.","evidence":"","evaluation":"جزئي","score":2,"notes":"","recommendation":""},
+      {"id":108,"domain":"الأخلاقية المهنية","principle":"مبدأ إثبات الكفاءة","standardNo":"2.3","standardName":"التطوير المهني المستمر","standardText":"يجب على المدققين الداخليين تحسين معرفتهم ومهاراتهم وكفاءاتهم الأخرى من خلال التطوير المهني المستمر.","evidence":"","evaluation":"كلي","score":3,"notes":"","recommendation":""},
+      {"id":109,"domain":"الأخلاقية المهنية","principle":"مبدأ ممارسة العناية المهنية اللازمة","standardNo":"1.4","standardName":"التوافق مع المعايير العالمية للتدقيق","standardText":"يجب أن تتوافق ممارسات التدقيق الداخلي مع المعايير الدولية للممارسة المهنية للتدقيق الداخلي.","evidence":"","evaluation":"جزئي","score":2,"notes":"","recommendation":""},
+      {"id":110,"domain":"الأخلاقية المهنية","principle":"مبدأ ممارسة العناية المهنية اللازمة","standardNo":"2.4","standardName":"العناية المهنية اللازمة","standardText":"يجب على المدققين الداخليين ممارسة العناية والمهارة المتوقعة من مدقق داخلي يتمتع بالكفاءة والعناية المعقولة.","evidence":"","evaluation":"كلي","score":3,"notes":"","recommendation":""},
+      {"id":111,"domain":"الأخلاقية المهنية","principle":"مبدأ ممارسة العناية المهنية اللازمة","standardNo":"3.4","standardName":"الشك المهني","standardText":"يجب على المدققين الداخليين ممارسة الشك المهني، والحفاظ على عقلية متسائلة والتقييم النقدي لمدى كفاية وملاءمة الأدلة.","evidence":"","evaluation":"كلي","score":3,"notes":"","recommendation":""},
+      {"id":112,"domain":"الأخلاقية المهنية","principle":"مبدأ الحفاظ على السرية","standardNo":"1.5","standardName":"استخدام المعلومات","standardText":"يجب على المدققين الداخليين توخي الحذر في استخدام وحماية المعلومات التي تم الحصول عليها أثناء أداء واجباتهم.","evidence":"","evaluation":"كلي","score":3,"notes":"","recommendation":""},
+      {"id":113,"domain":"الأخلاقية المهنية","principle":"مبدأ الحفاظ على السرية","standardNo":"2.5","standardName":"حماية المعلومات","standardText":"يجب على المدققين الداخليين عدم استخدام المعلومات لمصلحة شخصية أو بأي طريقة تخالف القانون أو تضر بالأهداف المشروعة والأخلاقية للمؤسسة.","evidence":"","evaluation":"كلي","score":3,"notes":"","recommendation":""},
+      {"id":201,"domain":"حوكمة وظيفة التدقيق الداخلي","principle":"مبدأ اعتماد المجلس للتدقيق","standardNo":"1.6","standardName":"تفويض التدقيق الداخلي","standardText":"يتم تحديد غرض وصلاحية ومسؤولية وظيفة التدقيق الداخلي رسمياً في ميثاق التدقيق الداخلي.","evidence":"","evaluation":"جزئي","score":2,"notes":"","recommendation":""},
+      {"id":202,"domain":"حوكمة وظيفة التدقيق الداخلي","principle":"مبدأ اعتماد المجلس للتدقيق","standardNo":"2.6","standardName":"ميثاق التدقيق الداخلي","standardText":"يجب على الرئيس التنفيذي للتدقيق مراجعة ميثاق التدقيق الداخلي دورياً وعرضه على الإدارة العليا والمجلس للموافقة عليه.","evidence":"","evaluation":"غير مطابق","score":1,"notes":"","recommendation":""},
+      {"id":203,"domain":"حوكمة وظيفة التدقيق الداخلي","principle":"مبدأ اعتماد المجلس للتدقيق","standardNo":"3.6","standardName":"دعم المجلس والإدارة العليا","standardText":"يجب أن يتلقى نشاط التدقيق الداخلي الدعم اللازم من المجلس والإدارة العليا لضمان استقلاليته وفعاليته.","evidence":"","evaluation":"غير مطابق","score":1,"notes":"","recommendation":""},
+      {"id":204,"domain":"حوكمة وظيفة التدقيق الداخلي","principle":"مبدأ الموقع المستقل للتدقيق","standardNo":"1.7","standardName":"الاستقلالية التنظيمية","standardText":"يجب أن يكون الرئيس التنفيذي للتدقيق مسؤولاً أمام مستوى داخل المؤسسة يسمح لنشاط التدقيق الداخلي بالوفاء بمسؤولياته.","evidence":"","evaluation":"غير مطابق","score":1,"notes":"","recommendation":""},
+      {"id":205,"domain":"حوكمة وظيفة التدقيق الداخلي","principle":"مبدأ الموقع المستقل للتدقيق","standardNo":"2.7","standardName":"مؤهلات الرئيس التنفيذي للتدقيق","standardText":"يجب أن يمتلك الرئيس التنفيذي للتدقيق المؤهلات والخبرات المهنية اللازمة لإدارة نشاط التدقيق بفعالية.","evidence":"","evaluation":"غير مطابق","score":1,"notes":"","recommendation":""},
+      {"id":206,"domain":"حوكمة وظيفة التدقيق الداخلي","principle":"مبدأ إشراف المجلس للتدقيق","standardNo":"1.8","standardName":"تفاعل المجلس","standardText":"يجب على الرئيس التنفيذي للتدقيق التواصل والتفاعل مباشرة مع المجلس.","evidence":"","evaluation":"غير مطابق","score":1,"notes":"","recommendation":""},
+      {"id":207,"domain":"حوكمة وظيفة التدقيق الداخلي","principle":"مبدأ إشراف المجلس للتدقيق","standardNo":"2.8","standardName":"الموارد","standardText":"يجب على الرئيس التنفيذي للتدقيق التأكد من أن موارد التدقيق الداخلي كافية وملائمة وتستخدم بفعالية لتحقيق خطة التدقيق المعتمدة.","evidence":"","evaluation":"غير مطابق","score":1,"notes":"","recommendation":""},
+      {"id":208,"domain":"حوكمة وظيفة التدقيق الداخلي","principle":"مبدأ إشراف المجلس للتدقيق","standardNo":"3.8","standardName":"الجودة","standardText":"يجب على الرئيس التنفيذي للتدقيق تطوير وصيانة برنامج لضمان وتحسين الجودة يغطي جميع جوانب نشاط التدقيق الداخلي.","evidence":"","evaluation":"غير مطابق","score":1,"notes":"","recommendation":""},
+      {"id":209,"domain":"حوكمة وظيفة التدقيق الداخلي","principle":"مبدأ إشراف المجلس للتدقيق","standardNo":"4.8","standardName":"تقييم الجودة الخارجي","standardText":"يجب إجراء تقييمات خارجية مرة واحدة على الأقل كل خمس سنوات من قبل مقيم أو فريق تقييم مؤهل ومستقل من خارج المؤسسة.","evidence":"","evaluation":"غير مطابق","score":1,"notes":"","recommendation":""},
+      {"id":301,"domain":"إدارة وظيفة التدقيق الداخلي","principle":"مبدأ التخطيط الإستراتيجي","standardNo":"1.9","standardName":"فهم عمليات الحوكمة وإدارة المخاطر والرقابة","standardText":"يجب أن يبني نشاط التدقيق الداخلي خطته على تقييم موثق للمخاطر، يتم إجراؤه مرة واحدة على الأقل سنوياً.","evidence":"","evaluation":"غير مطابق","score":1,"notes":"","recommendation":""},
+      {"id":302,"domain":"إدارة وظيفة التدقيق الداخلي","principle":"مبدأ التخطيط الإستراتيجي","standardNo":"2.9","standardName":"استراتيجية التدقيق الداخلي","standardText":"يجب على الرئيس التنفيذي للتدقيق وضع استراتيجية لنشاط التدقيق تتماشى مع أهداف المؤسسة وتوقعات أصحاب المصلحة.","evidence":"","evaluation":"غير مطابق","score":1,"notes":"","recommendation":""},
+      {"id":303,"domain":"إدارة وظيفة التدقيق الداخلي","principle":"مبدأ التخطيط الإستراتيجي","standardNo":"3.9","standardName":"المناهج","standardText":"يجب على نشاط التدقيق الداخلي وضع منهجيات متسقة لأداء مهام التدقيق.","evidence":"","evaluation":"غير مطابق","score":1,"notes":"","recommendation":""},
+      {"id":304,"domain":"إدارة وظيفة التدقيق الداخلي","principle":"مبدأ التخطيط الإستراتيجي","standardNo":"4.9","standardName":"خطة التدقيق الداخلي","standardText":"يجب على الرئيس التنفيذي للتدقيق وضع خطة مبنية على المخاطر لتحديد أولويات نشاط التدقيق الداخلي.","evidence":"","evaluation":"غير مطابق","score":1,"notes":"","recommendation":""},
+      {"id":305,"domain":"إدارة وظيفة التدقيق الداخلي","principle":"مبدأ التخطيط الإستراتيجي","standardNo":"5.9","standardName":"التنسيق والاعتماد","standardText":"يجب على الرئيس التنفيذي للتدقيق التنسيق مع مقدمي خدمات التأكيد والاستشارات الآخرين لضمان التغطية المناسبة وتقليل ازدواجية الجهود.","evidence":"","evaluation":"غير مطابق","score":1,"notes":"","recommendation":""},
+      {"id":306,"domain":"إدارة وظيفة التدقيق الداخلي","principle":"مبدأ إدارة الموارد","standardNo":"1.10","standardName":"إدارة الموارد المالية","standardText":"يجب إدارة الموارد المالية لنشاط التدقيق الداخلي بفعالية وكفاءة.","evidence":"","evaluation":"غير مطابق","score":1,"notes":"","recommendation":""},
+      {"id":307,"domain":"إدارة وظيفة التدقيق الداخلي","principle":"مبدأ إدارة الموارد","standardNo":"2.10","standardName":"إدارة الموارد البشرية","standardText":"يجب على الرئيس التنفيذي للتدقيق ضمان توظيف وتطوير كادر تدقيق يتمتع بالكفاءات اللازمة.","evidence":"","evaluation":"غير مطابق","score":1,"notes":"","recommendation":""},
+      {"id":308,"domain":"إدارة وظيفة التدقيق الداخلي","principle":"مبدأ إدارة الموارد","standardNo":"3.10","standardName":"الموارد التكنولوجية","standardText":"يجب على الرئيس التنفيذي للتدقيق السعي لاستخدام التكنولوجيا لتحسين كفاءة وفعالية نشاط التدقيق.","evidence":"","evaluation":"غير مطابق","score":1,"notes":"","recommendation":""},
+      {"id":309,"domain":"إدارة وظيفة التدقيق الداخلي","principle":"مبدأ التواصل بشكل فعال","standardNo":"1.11","standardName":"بناء العلاقات والتواصل مع أصحاب المصلحة","standardText":"يجب على الرئيس التنفيذي للتدقيق بناء علاقات مهنية قوية مع أصحاب المصلحة لتعزيز قيمة التدقيق.","evidence":"","evaluation":"غير مطابق","score":1,"notes":"","recommendation":""},
+      {"id":310,"domain":"إدارة وظيفة التدقيق الداخلي","principle":"مبدأ التواصل بشكل فعال","standardNo":"2.11","standardName":"التواصل الفعال","standardText":"يجب أن تكون اتصالات نشاط التدقيق دقيقة وموضوعية وواضحة وموجزة وبناءة وكاملة وفي الوقت المناسب.","evidence":"","evaluation":"غير مطابق","score":1,"notes":"","recommendation":""},
+      {"id":311,"domain":"إدارة وظيفة التدقيق الداخلي","principle":"مبدأ التواصل بشكل فعال","standardNo":"3.11","standardName":"تبليغ النتائج","standardText":"يجب على الرئيس التنفيذي للتدقيق إبلاغ نتائج المهام للأطراف المعنية في الوقت المناسب.","evidence":"","evaluation":"غير مطابق","score":1,"notes":"","recommendation":""},
+      {"id":312,"domain":"إدارة وظيفة التدقيق الداخلي","principle":"مبدأ التواصل بشكل فعال","standardNo":"4.11","standardName":"الأخطاء والسهو","standardText":"إذا احتوى تقرير نهائي على خطأ أو حذف جوهري، يجب على الرئيس التنفيذي للتدقيق إبلاغ المعلومات المصححة لجميع الأطراف الذين تلقوا التقرير الأصلي.","evidence":"","evaluation":"غير مطابق","score":1,"notes":"","recommendation":""},
+      {"id":313,"domain":"إدارة وظيفة التدقيق الداخلي","principle":"مبدأ التواصل بشكل فعال","standardNo":"5.11","standardName":"الإبلاغ عن قبول المخاطر","standardText":"عندما يعتقد الرئيس التنفيذي للتدقيق أن الإدارة العليا قد قبلت مستوى من المخاطر قد لا يكون مقبولاً للمؤسسة، يجب عليه مناقشة الأمر مع الإدارة العليا.","evidence":"","evaluation":"غير مطابق","score":1,"notes":"","recommendation":""},
+      {"id":314,"domain":"إدارة وظيفة التدقيق الداخلي","principle":"مبدأ تعزيز الجودة","standardNo":"1.12","standardName":"تقييم الجودة الداخلي","standardText":"يجب أن تتضمن التقييمات الداخلية مراجعات مستمرة لأداء نشاط التدقيق الداخلي وتقييمات دورية تجرى من خلال التقييم الذاتي.","evidence":"","evaluation":"غير مطابق","score":1,"notes":"","recommendation":""},
+      {"id":315,"domain":"إدارة وظيفة التدقيق الداخلي","principle":"مبدأ تعزيز الجودة","standardNo":"2.12","standardName":"قياس الأداء","standardText":"يجب على الرئيس التنفيذي للتدقيق وضع مقاييس أداء لتقييم فعالية وكفاءة نشاط التدقيق.","evidence":"","evaluation":"غير مطابق","score":1,"notes":"","recommendation":""},
+      {"id":316,"domain":"إدارة وظيفة التدقيق الداخلي","principle":"مبدأ تعزيز الجودة","standardNo":"3.12","standardName":"الإشراف على أداء المهمة وتحسينه","standardText":"يجب الإشراف على المهام بشكل مناسب لضمان تحقيق الأهداف وضمان الجودة وتطوير كادر التدقيق.","evidence":"","evaluation":"جزئي","score":2,"notes":"","recommendation":""},
+      {"id":401,"domain":"أداء خدمات التدقيق الداخلي","principle":"مبدأ التخطيط للمهام بفعالية","standardNo":"1.13","standardName":"اتصالات المهمة","standardText":"يجب على المدققين الداخليين التواصل مع إدارة الجهة الخاضعة للتدقيق طوال فترة المهمة.","evidence":"","evaluation":"جزئي","score":2,"notes":"","recommendation":""},
+      {"id":402,"domain":"أداء خدمات التدقيق الداخلي","principle":"مبدأ التخطيط للمهام بفعالية","standardNo":"2.13","standardName":"تقييم مخاطر المهمة","standardText":"يجب على المدققين الداخليين إجراء تقييم للمخاطر ذات الصلة بالنشاط قيد المراجعة.","evidence":"","evaluation":"كلي","score":3,"notes":"","recommendation":""},
+      {"id":403,"domain":"أداء خدمات التدقيق الداخلي","principle":"مبدأ التخطيط للمهام بفعالية","standardNo":"3.13","standardName":"أهداف المهمة ونطاقها","standardText":"يجب وضع أهداف لكل مهمة تعكس نتائج تقييم المخاطر وتحديد نطاق كافٍ لتحقيق هذه الأهداف.","evidence":"","evaluation":"كلي","score":3,"notes":"","recommendation":""},
+      {"id":404,"domain":"أداء خدمات التدقيق الداخلي","principle":"مبدأ التخطيط للمهام بفعالية","standardNo":"4.13","standardName":"مقاييس التقييم","standardText":"يجب على المدققين الداخليين تحديد المعايير أو المقاييس التي سيتم استخدامها لتقييم النشاط قيد المراجعة.","evidence":"","evaluation":"جزئي","score":2,"notes":"","recommendation":""},
+      {"id":405,"domain":"أداء خدمات التدقيق الداخلي","principle":"مبدأ التخطيط للمهام بفعالية","standardNo":"5.13","standardName":"موارد المهمة","standardText":"يجب تحديد الموارد اللازمة لتحقيق أهداف المهمة بناءً على طبيعة وتعقيد كل مهمة.","evidence":"","evaluation":"جزئي","score":2,"notes":"","recommendation":""},
+      {"id":406,"domain":"أداء خدمات التدقيق الداخلي","principle":"مبدأ التخطيط للمهام بفعالية","standardNo":"6.13","standardName":"برنامج العمل","standardText":"يجب على المدققين الداخليين وضع برامج عمل تحقق أهداف المهمة.","evidence":"","evaluation":"كلي","score":3,"notes":"","recommendation":""},
+      {"id":407,"domain":"أداء خدمات التدقيق الداخلي","principle":"مبدأ تنفيذ أعمال المهمة","standardNo":"1.14","standardName":"جمع المعلومات لغرض التحليل والتقييم","standardText":"يجب على المدققين الداخليين تحديد وتحليل وتقييم وتوثيق معلومات كافية لتحقيق أهداف المهمة.","evidence":"","evaluation":"جزئي","score":2,"notes":"","recommendation":""},
+      {"id":408,"domain":"أداء خدمات التدقيق الداخلي","principle":"مبدأ تنفيذ أعمال المهمة","standardNo":"2.14","standardName":"التحليلات ونتائج المهمة المحتملة","standardText":"يجب على المدققين الداخليين بناء استنتاجاتهم على التحليلات والتقييمات المناسبة.","evidence":"","evaluation":"كلي","score":3,"notes":"","recommendation":""},
+      {"id":409,"domain":"أداء خدمات التدقيق الداخلي","principle":"مبدأ تنفيذ أعمال المهمة","standardNo":"3.14","standardName":"تقييم النتائج","standardText":"يجب تقييم نتائج المهام لتحديد ما إذا كانت تمثل ملاحظات أو فرصاً للتحسين.","evidence":"","evaluation":"جزئي","score":2,"notes":"","recommendation":""},
+      {"id":410,"domain":"أداء خدمات التدقيق الداخلي","principle":"مبدأ تنفيذ أعمال المهمة","standardNo":"4.14","standardName":"التوصيات وخطط العمل","standardText":"يجب على المدققين الداخليين تقديم توصيات للتحسين أو اقتراح خطط عمل لمعالجة الملاحظات.","evidence":"","evaluation":"جزئي","score":2,"notes":"","recommendation":""},
+      {"id":411,"domain":"أداء خدمات التدقيق الداخلي","principle":"مبدأ تنفيذ أعمال المهمة","standardNo":"5.14","standardName":"استنتاجات المهمة","standardText":"يجب أن تتضمن تقارير المهام استنتاجات تعبر عن رأي المدقق الداخلي أو خلاصة النتائج.","evidence":"","evaluation":"كلي","score":3,"notes":"","recommendation":""},
+      {"id":412,"domain":"أداء خدمات التدقيق الداخلي","principle":"مبدأ تنفيذ أعمال المهمة","standardNo":"6.14","standardName":"توثيق المهمة","standardText":"يجب توثيق المعلومات ذات الصلة لدعم الاستنتاجات ونتائج المهمة.","evidence":"","evaluation":"جزئي","score":2,"notes":"","recommendation":""},
+      {"id":413,"domain":"أداء خدمات التدقيق الداخلي","principle":"مبدأ الإبلاغ عن نتائج المهمة","standardNo":"1.15","standardName":"إبلاغ المهمة النهائي","standardText":"يجب إبلاغ نتائج المهام المعتمدة للأطراف المناسبة.","evidence":"","evaluation":"كلي","score":3,"notes":"","recommendation":""},
+      {"id":414,"domain":"أداء خدمات التدقيق الداخلي","principle":"مبدأ الإبلاغ عن نتائج المهمة","standardNo":"2.15","standardName":"تأكيد تنفيذ التوصيات وخطط العمل","standardText":"يجب على الرئيس التنفيذي للتدقيق إنشاء نظام لمتابعة التصرف في النتائج المبلغ عنها للإدارة.","evidence":"","evaluation":"كلي","score":3,"notes":"","recommendation":""}
+];
+
+const evaluationMap = { 'كلي': 3, 'جزئي': 2, 'غير مطابق': 1, 'خارج النطاق': 0 };
+const scoreMap = { 3: 'كلي', 2: 'جزئي', 1: 'غير مطابق', 0: 'خارج النطاق' };
+const domainOrder = ["الأخلاقية المهنية", "حوكمة وظيفة التدقيق الداخلي", "إدارة وظيفة التدقيق الداخلي", "أداء خدمات التدقيق الداخلي"];
+
+const sortStandards = (aKey, bKey) => {
+    const standardNoA = aKey.split('||')[0];
+    const standardNoB = bKey.split('||')[0];
+    const partsA = standardNoA.split('.').map(Number);
+    const partsB = standardNoB.split('.').map(Number);
+    const len = Math.max(partsA.length, partsB.length);
+    for (let i = 0; i < len; i++) {
+        const valA = partsA[i] || 0;
+        const valB = partsB[i] || 0;
+        if (valA !== valB) {
+            return valA - valB;
+        }
+    }
+    return 0;
+};
+
+// --- Components ---
+const Loader = () => <div className="loader"></div>;
+
+const Header = ({ onFileChange, onExportExcel, onExportWord, onToggleDarkMode, isLoading, isDarkMode }) => (
+  <header className="header">
+    <h1>أداة التدقيق والتقييم التفاعلية</h1>
+    <div className="controls">
+      <div className="file-input-container">
+        <label htmlFor="file-upload" className="file-input-label">استيراد ملف...</label>
+        <input id="file-upload" type="file" onChange={onFileChange} accept=".csv,.xlsx,.xls" />
+        {isLoading && <Loader />}
+      </div>
+      <button onClick={onExportExcel}>تصدير إلى Excel</button>
+      <button onClick={onExportWord}>تصدير إلى Word</button>
+      <button className="secondary" onClick={onToggleDarkMode}>
+        {isDarkMode ? 'الوضع الفاتح' : 'الوضع الداكن'}
+      </button>
+    </div>
+  </header>
+);
+
+const Tabs = ({ activeTab, onTabClick }) => {
+    const TABS = [
+        { name: 'data', label: 'البيانات والتقييم' },
+        { name: 'details', label: 'نتائج تقييم المعايير التفصيلي' },
+        { name: 'results', label: 'الرسوم البيانية' },
+        { name: 'notes', label: 'الملاحظات والتوصيات المجمعة' },
+    ];
+    return (
+        <div className="tabs">
+            {TABS.map(tab => (
+                <button 
+                    key={tab.name} 
+                    className={`tab-button ${activeTab === tab.name ? 'active' : ''}`} 
+                    onClick={() => onTabClick(tab.name)}
+                >
+                    {tab.label}
+                </button>
+            ))}
+        </div>
+    );
+};
+
+const DataFilters = ({ filters, options, onChange }) => (
+    <div className="filters-container">
+        <select value={filters.domain} onChange={e => onChange('domain', e.target.value)}>
+            <option value="">-- كل المجالات --</option>
+            {options.domains.map((d) => <option key={d} value={d}>{d}</option>)}
+        </select>
+        <select value={filters.principle} onChange={e => onChange('principle', e.target.value)} disabled={!filters.domain}>
+            <option value="">-- كل المبادئ --</option>
+            {options.principles.map((p) => <option key={p} value={p}>{p}</option>)}
+        </select>
+        <select value={filters.standardNo} onChange={e => onChange('standardNo', e.target.value)} disabled={!filters.principle}>
+            <option value="">-- كل المعايير --</option>
+            {options.standards.map((s) => <option key={s} value={s}>{s}</option>)}
+        </select>
+    </div>
+);
+
+const DataTable = ({ data, onDataChange }) => (
+    <div className="table-container">
+        <table>
+            <thead>
+            <tr>
+                <th>المجال</th>
+                <th>المبدأ</th>
+                <th>المعيار</th>
+                <th>اسم المعيار</th>
+                <th>الأدلة والشواهد</th>
+                <th>التقييم</th>
+                <th>الملاحظات</th>
+                <th>التوصيات</th>
+            </tr>
+            </thead>
+            <tbody>
+            {data.map(item => (
+                <tr key={item.id}>
+                <td style={{minWidth: '150px'}}>{item.domain}</td>
+                <td style={{minWidth: '200px'}}>{item.principle}</td>
+                <td className="has-tooltip" title={item.standardText || "لا يوجد نص متاح لهذا المعيار"}>{item.standardNo}</td>
+                <td className="has-tooltip" style={{minWidth: '200px'}} title={item.standardText || "لا يوجد نص متاح لهذا المعيار"}>{item.standardName}</td>
+                <td style={{minWidth: '200px'}}>{item.evidence}</td>
+                <td style={{minWidth: '150px'}}>
+                    <select 
+                        value={item.score}
+                        onChange={e => onDataChange(item.id, 'score', parseInt(e.target.value, 10))}
+                        className={`score-${item.score}`}
+                    >
+                        <option value="3">3 - كلي</option>
+                        <option value="2">2 - جزئي</option>
+                        <option value="1">1 - غير مطابق</option>
+                        <option value="0">0 - خارج النطاق</option>
+                    </select>
+                </td>
+                <td style={{minWidth: '200px'}}><textarea rows={3} value={item.notes} onChange={e => onDataChange(item.id, 'notes', e.target.value)} /></td>
+                <td style={{minWidth: '200px'}}><textarea rows={3} value={item.recommendation} onChange={e => onDataChange(item.id, 'recommendation', e.target.value)} /></td>
+                </tr>
+            ))}
+            </tbody>
+        </table>
+    </div>
+);
+
+const DataView = ({ data, onDataChange }) => {
+    const [filters, setFilters] = useState({ domain: '', principle: '', standardNo: '' });
+
+    const filterOptions = useMemo(() => {
+        const domains = [...new Set(data.map(item => item.domain))];
+        const principles = filters.domain ? [...new Set(data.filter(item => item.domain === filters.domain).map(item => item.principle))] : [];
+        const standards = filters.principle ? [...new Set(data.filter(item => item.principle === filters.principle && item.domain === filters.domain).map(item => item.standardNo))] : [];
+        return { domains, principles, standards };
+    }, [data, filters.domain, filters.principle]);
+
+    const filteredData = useMemo(() => {
+        return data.filter(item => {
+        const domainMatch = !filters.domain || item.domain === filters.domain;
+        const principleMatch = !filters.principle || item.principle === filters.principle;
+        const standardMatch = !filters.standardNo || item.standardNo === filters.standardNo;
+        return domainMatch && principleMatch && standardMatch;
+        });
+    }, [data, filters]);
+
+    const handleFilterChange = (filterName, value) => {
+        setFilters(prev => {
+        const newFilters = { ...prev, [filterName]: value };
+        if (filterName === 'domain') {
+            newFilters.principle = '';
+            newFilters.standardNo = '';
+        }
+        if (filterName === 'principle') {
+            newFilters.standardNo = '';
+        }
+        return newFilters;
+        });
+    };
+
+    return (
+        <div>
+            <DataFilters filters={filters} options={filterOptions} onChange={handleFilterChange} />
+            <DataTable data={filteredData} onDataChange={onDataChange} />
+        </div>
+    );
+};
+
+const RadarChart = ({ domain, data, isDarkMode }) => {
+  const chartRef = useRef(null);
+  const chartInstance = useRef(null);
+
+  useEffect(() => {
+    if (chartInstance.current) {
+      chartInstance.current.destroy();
+    }
+    
+    if (!chartRef.current) return;
+
+    const textColor = isDarkMode ? '#e0e0e0' : '#212529';
+    const gridColor = '#A6A6A6';
+
+    const ctx = chartRef.current.getContext('2d');
+    if (!ctx) return;
+
+    chartInstance.current = new Chart(ctx, {
+      type: 'radar',
+      data: {
+        labels: data.principles.map((p) => p.name),
+        datasets: [{
+          label: `متوسط الدرجة`,
+          data: data.principles.map((p) => p.averageScore),
+          fill: false,
+          borderColor: '#C00000',
+          pointBackgroundColor: '#C00000',
+          pointBorderColor: '#fff',
+          pointHoverBackgroundColor: '#fff',
+          pointHoverBorderColor: '#C00000',
+          pointStyle: 'rect',
+          pointRadius: 11,
+          pointHoverRadius: 13
+        }]
+      },
+      options: {
+        maintainAspectRatio: false,
+        scales: {
+          r: {
+            angleLines: { color: gridColor, lineWidth: 2.5 },
+            grid: { color: gridColor, lineWidth: 2.5 },
+            pointLabels: {
+              font: { size: 14 },
+               color: textColor,
+            },
+            ticks: {
+              backdropColor: 'rgba(0,0,0,0)',
+              color: isDarkMode ? '#a0a0a0' : '#6c757d',
+              stepSize: 1,
+            },
+            suggestedMin: 0,
+            suggestedMax: 3
+          }
+        },
+        plugins: {
+          legend: {
+            labels: { color: textColor }
+          }
+        },
+        elements: {
+          line: { borderWidth: 4 }
+        }
+      }
+    });
+
+    return () => { if(chartInstance.current) chartInstance.current.destroy(); };
+  }, [data, domain, isDarkMode]);
+
+  return (
+    <div className="chart-container">
+      <h3>{domain}</h3>
+      <div style={{ position: 'relative', height: '500px' }}>
+        <canvas ref={chartRef}></canvas>
+      </div>
+    </div>
+  );
+};
+
+const ChartsView = ({ processedData, isDarkMode }) => (
+  <div>
+    <h2>نتائج المجالات الرئيسية (متوسط الدرجة حسب المبدأ)</h2>
+    <div className="chart-grid">
+      {domainOrder.map(domain => {
+        const dData = processedData[domain];
+        if (!dData) return null;
+        return <RadarChart key={domain} domain={domain} data={dData} isDarkMode={isDarkMode} />;
+      })}
+    </div>
+  </div>
+);
+
+const DetailedResultsView = ({ processedData }) => {
+    const calculateAverage = (items) => {
+        const validItems = items.filter(item => item.score > 0);
+        if (validItems.length === 0) return { average: 0, rounded: 0 };
+        const sum = validItems.reduce((acc, item) => acc + item.score, 0);
+        const average = sum / validItems.length;
+        return { average: average, rounded: Math.round(average) };
+    };
+
+    const getAverageScoreDotClass = (average) => {
+        if (average > 2.5) return 'score-dot-3';
+        if (average >= 1.5) return 'score-dot-2';
+        if (average > 0) return 'score-dot-1';
+        return 'score-dot-0';
+    };
+    
+    return (
+        <div>
+            <h2>نتائج تقييم المعايير التفصيلي</h2>
+            <div className="detailed-results-grid">
+                {domainOrder.map(domain => {
+                    if (!processedData[domain] || !processedData[domain].items) return null;
+                    
+                    const domainItems = processedData[domain].items;
+                    const principlesInOrder = [];
+                    domainItems.forEach((item) => {
+                        if (!principlesInOrder.includes(item.principle)) {
+                            principlesInOrder.push(item.principle);
+                        }
+                    });
+                    const { average, rounded } = calculateAverage(domainItems);
+
+                    return (
+                        <div key={domain} className="detailed-table-wrapper">
+                            <table className="detailed-table">
+                                <thead>
+                                    <tr>
+                                        <th colSpan={3} className="domain-header">
+                                            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px'}}>
+                                                <span>{domain}</span>
+                                                {average > 0 && (
+                                                   <span style={{fontSize: '0.9rem', fontWeight: 'normal'}}>
+                                                       متوسط التقييم: 
+                                                       <span className={`score-badge score-badge-${rounded}`} style={{marginRight: '5px'}}>
+                                                           {average.toFixed(2)}
+                                                       </span>
+                                                   </span>
+                                                )}
+                                            </div>
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th>رقم المعيار</th>
+                                        <th>اسم المعيار</th>
+                                        <th>متوسط التقييم</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {principlesInOrder.map(principle => {
+                                        const principleItems = domainItems.filter((item) => item.principle === principle);
+                                        
+                                        const standards = {};
+                                        principleItems.forEach((item) => {
+                                            const groupKey = `${item.standardNo}||${item.standardName}`;
+                                            if (!standards[groupKey]) {
+                                                standards[groupKey] = {
+                                                    items: [],
+                                                    standardNo: item.standardNo,
+                                                    standardName: item.standardName
+                                                };
+                                            }
+                                            standards[groupKey].items.push(item);
+                                        });
+
+                                        return (
+                                            <React.Fragment key={principle}>
+                                                <tr className="principle-row">
+                                                    <td colSpan={3}>{principle}</td>
+                                                </tr>
+                                                {Object.keys(standards).sort(sortStandards).map(groupKey => {
+                                                    const group = standards[groupKey];
+                                                    const { average } = calculateAverage(group.items);
+                                                    const dotClass = getAverageScoreDotClass(average);
+                                                    const title = `المتوسط: ${average.toFixed(2)}`;
+                                                    return (
+                                                        <tr key={groupKey}>
+                                                            <td>{group.standardNo}</td>
+                                                            <td>{group.standardName}</td>
+                                                            <td>
+                                                                <div 
+                                                                    className={`score-dot ${dotClass}`}
+                                                                    title={title}
+                                                                ></div>
+                                                            </td>
+                                                        </tr>
+                                                    );
+                                                })}
+                                            </React.Fragment>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
+                    );
+                })}
+            </div>
+        </div>
+    );
+};
+
+const AggregatedNotesView = ({ aggregatedNotes }) => {
+    const [scoreFilter, setScoreFilter] = useState('all');
+
+    const filteredNotes = useMemo(() => {
+        const notesArray = Object.values(aggregatedNotes);
+        if (scoreFilter === 'all') {
+            return notesArray;
+        }
+        return notesArray.filter((group) => {
+            const score = group.averageScore;
+            switch (scoreFilter) {
+                case 'compliant':
+                    return score >= 2.5;
+                case 'partial':
+                    return score >= 1.5 && score < 2.5;
+                case 'non-compliant':
+                    return score >= 1 && score < 1.5;
+                case 'out-of-scope':
+                    return score < 1;
+                default:
+                    return true;
+            }
+        });
+    }, [aggregatedNotes, scoreFilter]);
+
+    return (
+        <div>
+            <h2>الملاحظات والتوصيات المجمعة حسب المعيار</h2>
+            <div className="filters-container" style={{maxWidth: '400px'}}>
+                 <select value={scoreFilter} onChange={e => setScoreFilter(e.target.value)}>
+                    <option value="all">فلترة حسب متوسط التقييم: الكل</option>
+                    <option value="compliant">مطابق كلياً (2.5 - 3)</option>
+                    <option value="partial">مطابق جزئياً (1.5 - 2.49)</option>
+                    <option value="non-compliant">غير مطابق (1 - 1.49)</option>
+                    <option value="out-of-scope">خارج النطاق (0 - 0.99)</option>
+                </select>
+            </div>
+             <div className="table-container">
+                <table className="aggregated-notes-table">
+                    <thead>
+                        <tr>
+                            <th style={{width: '10%'}}>المعيار</th>
+                            <th style={{width: '15%'}}>اسم المعيار</th>
+                            <th style={{width: '25%'}}>نص المعيار</th>
+                            <th style={{width: '10%'}}>متوسط التقييم</th>
+                            <th style={{width: '20%'}}>الملاحظات المجمعة</th>
+                            <th style={{width: '20%'}}>التوصيات المجمعة</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {filteredNotes.map((group) => (
+                            <tr key={`${group.standardNo}||${group.standardName}`}>
+                                <td>{group.standardNo}</td>
+                                <td>{group.standardName}</td>
+                                <td>{group.standardText}</td>
+                                <td>
+                                    <span className={`score-badge score-badge-${Math.round(group.averageScore)}`}>
+                                        {group.averageScore.toFixed(2)}
+                                    </span>
+                                </td>
+                                <td style={{whiteSpace: 'pre-wrap'}}>{group.notes.join('\n---\n')}</td>
+                                <td style={{whiteSpace: 'pre-wrap'}}>{group.recommendations.join('\n---\n')}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+             </div>
+        </div>
+    );
+};
+
+// --- Main App Component ---
+const App = () => {
+  const [data, setData] = useState(initialData);
+  const [activeTab, setActiveTab] = useState('details');
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  
+  useEffect(() => {
+    document.body.className = isDarkMode ? 'dark-mode' : '';
+  }, [isDarkMode]);
+
+  const handleDataChange = useCallback((id, field, value) => {
+    setData(prevData =>
+        prevData.map(item => {
+            if (item.id === id) {
+                const updatedItem = { ...item, [field]: value };
+                if (field === 'score') {
+                updatedItem.evaluation = scoreMap[value];
+                }
+                return updatedItem;
+            }
+            return item;
+        })
+    );
+  }, []);
+  
+  const handleFileChange = (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setIsLoading(true);
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        try {
+            const fileData = new Uint8Array(e.target?.result);
+            const workbook = XLSX.read(fileData, { type: 'array' });
+            const sheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[sheetName];
+            const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+            if (!jsonData || jsonData.length === 0) throw new Error("الملف فارغ أو غير قابل للقراءة.");
+
+            const getHeadersFromSheet = (ws) => {
+                const headers = [];
+                if (!ws['!ref']) return [];
+                const range = XLSX.utils.decode_range(ws['!ref']);
+                const R = range.s.r; // First row index
+                for (let C = range.s.c; C <= range.e.c; ++C) {
+                    const cell = ws[XLSX.utils.encode_cell({c: C, r: R})];
+                    const headerText = cell ? XLSX.utils.format_cell(cell) : ''; 
+                    if (headerText) {
+                        headers.push(headerText.trim());
+                    }
+                }
+                return headers;
+            }
+            const fileHeaders = getHeadersFromSheet(worksheet);
+            
+            const headerMapping = {};
+            const APP_SCHEMA = {
+              domain: ['المجال', 'domain'],
+              principle: ['المبدأ', 'principle'],
+              standardNo: ['المعيار', 'standardno', 'standard number',  'standard', 'رقم المعيار' ],
+              standardName: ['اسم المعيار', 'standardname', 'standard name'],
+              standardText: ['نص المعيار', 'standardtext', 'standard text'],
+              evidence: ['الأدلة والشواهد', 'evidence', 'evidences'],
+              evaluation: ['التقييم', 'evaluation', 'rating'],
+              score: ['الدرجة', 'score'],
+              notes: ['الملاحظات', 'notes', 'comments', 'ملاحظات', 'ملاحظة', 'ملاحظه', 'الملاحظه', 'تعليقات', 'التعليقات'],
+              recommendation: ['التوصيات', 'recommendation', 'recommendations', 'توصيات', 'توصية', 'توصيه', 'التوصيه', 'مقترحات', 'المقترحات']
+            };
+
+            for (const internalField in APP_SCHEMA) {
+                const possibleHeaders = APP_SCHEMA[internalField];
+                const foundHeader = fileHeaders.find(h => possibleHeaders.includes(h.toLowerCase().trim()));
+                if (foundHeader) headerMapping[internalField] = foundHeader;
+            }
+
+            const normalizedData = jsonData.map((row, index) => {
+                const mappedRow = {
+                    id: Date.now() + index, 
+                    domain: (row[headerMapping.domain] || '').trim(),
+                    principle: (row[headerMapping.principle] || '').trim(), 
+                    standardNo: String(row[headerMapping.standardNo] || '').trim(),
+                    standardName: (row[headerMapping.standardName] || '').trim(), 
+                    standardText: (row[headerMapping.standardText] || '').trim(),
+                    evidence: (row[headerMapping.evidence] || '').trim(), 
+                    notes: String(row[headerMapping.notes] || '').trim(),
+                    recommendation: String(row[headerMapping.recommendation] || '').trim(), 
+                    score: 0, 
+                    evaluation: 'خارج النطاق'
+                };
+
+                const rawEvaluation = row[headerMapping.evaluation];
+                const rawScore = row[headerMapping.score];
+                if (rawEvaluation && evaluationMap[rawEvaluation.trim()] !== undefined) {
+                    mappedRow.score = evaluationMap[rawEvaluation.trim()];
+                    mappedRow.evaluation = rawEvaluation.trim();
+                } else if (rawScore !== undefined && scoreMap[parseInt(rawScore, 10)]) {
+                    mappedRow.score = parseInt(rawScore, 10);
+                    mappedRow.evaluation = scoreMap[mappedRow.score];
+                }
+                return mappedRow;
+            });
+            setData(normalizedData);
+        } catch (error) {
+            console.error("Error parsing file:", error);
+            alert("حدث خطأ أثناء قراءة الملف. يرجى التأكد من أن الملف صحيح (CSV, XLSX, XLS) وأن الأعمدة المطلوبة موجودة.");
+        } finally {
+            setTimeout(() => setIsLoading(false), 300);
+            if(event.target) event.target.value = '';
+        }
+    };
+    reader.readAsArrayBuffer(file);
+  };
+
+  const calculateAverage = (items) => {
+    const validItems = items.filter(item => item.score > 0);
+    if (validItems.length === 0) return 0;
+    return validItems.reduce((acc, item) => acc + item.score, 0) / validItems.length;
+  };
+  
+  const processedData = useMemo(() => {
+    const result = {};
+    domainOrder.forEach(domain => {
+        const domainItems = data.filter(item => item.domain === domain);
+        if (!domainItems.length) return;
+
+        const principlesInOrder = [];
+        domainItems.forEach(item => {
+            if (!principlesInOrder.includes(item.principle)) {
+                principlesInOrder.push(item.principle);
+            }
+        });
+        
+        result[domain] = {
+            principles: principlesInOrder.map(principle => ({
+              name: principle,
+              averageScore: calculateAverage(domainItems.filter(item => item.principle === principle))
+            })),
+            items: domainItems
+        };
+    });
+    return result;
+  }, [data]);
+  
+  const aggregatedNotes = useMemo(() => {
+    const groups = {};
+    data.forEach(item => {
+      const groupKey = `${item.standardNo}||${item.standardName}`;
+      if (!groups[groupKey]) {
+        groups[groupKey] = {
+          ...item, items: [], notes: [], recommendations: []
+        };
+      }
+      groups[groupKey].items.push(item);
+      if (item.notes) groups[groupKey].notes.push(item.notes);
+      if (item.recommendation) groups[groupKey].recommendations.push(item.recommendation);
+    });
+    Object.keys(groups).forEach(key => {
+        groups[key].averageScore = calculateAverage(groups[key].items);
+    });
+    return groups;
+  }, [data]);
+
+  const exportToExcel = () => {
+    // ورقة 1: بيانات التقييم
+    const exportData = data.map(item => ({
+        'المجال': item.domain, 'المبدأ': item.principle, 'المعيار': item.standardNo,
+        'اسم المعيار': item.standardName, 'نص المعيار': item.standardText, 'الأدلة والشواهد': item.evidence,
+        'التقييم': item.evaluation, 'الدرجة': item.score, 'الملاحظات': item.notes, 'التوصيات': item.recommendation,
+    }));
+    const ws1 = XLSX.utils.json_to_sheet(exportData);
+
+    // ورقة 2: نتائج التقييم التفصيلي
+    const detailedResultsData = [];
+    domainOrder.forEach(domain => {
+        if (!processedData[domain] || !processedData[domain].items) return;
+        const domainItems = processedData[domain].items;
+        const principlesInOrder = [...new Set(domainItems.map(item => item.principle))];
+
+        principlesInOrder.forEach(principle => {
+            const principleItems = domainItems.filter(item => item.principle === principle);
+            const standards = {};
+            principleItems.forEach(item => {
+                const groupKey = `${item.standardNo}||${item.standardName}`;
+                if (!standards[groupKey]) {
+                    standards[groupKey] = { items: [], standardNo: item.standardNo, standardName: item.standardName };
+                }
+                standards[groupKey].items.push(item);
+            });
+
+            Object.keys(standards).sort(sortStandards).forEach(groupKey => {
+                const group = standards[groupKey];
+                const average = calculateAverage(group.items);
+                detailedResultsData.push({
+                    'المجال': domain,
+                    'المبدأ': principle,
+                    'رقم المعيار': group.standardNo,
+                    'اسم المعيار': group.standardName,
+                    'متوسط التقييم': average.toFixed(2),
+                });
+            });
+        });
+    });
+    const ws2 = XLSX.utils.json_to_sheet(detailedResultsData);
+
+    // ورقة 3: ملخص نتائج المجالات (بيانات الرسوم البيانية)
+    const chartDataForExport = [];
+    Object.entries(processedData).forEach(([domain, domainData]) => {
+        if (domainData && domainData.principles) {
+            domainData.principles.forEach(principle => {
+                chartDataForExport.push({
+                    'المجال': domain,
+                    'المبدأ': principle.name,
+                    'متوسط الدرجة': principle.averageScore.toFixed(2),
+                });
+            });
+        }
+    });
+    const ws3 = XLSX.utils.json_to_sheet(chartDataForExport);
+    
+    // ورقة 4: الملاحظات والتوصيات المجمعة
+    const aggregatedNotesData = Object.values(aggregatedNotes).map((group) => ({
+        'المعيار': group.standardNo, 'اسم المعيار': group.standardName, 'نص المعيار': group.standardText,
+        'متوسط درجة التقييم': group.averageScore.toFixed(2),
+        'الملاحظات': group.notes.join('\n---\n'), 'التوصيات': group.recommendations.join('\n---\n'),
+    }));
+    const ws4 = XLSX.utils.json_to_sheet(aggregatedNotesData);
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws1, "بيانات التقييم");
+    XLSX.utils.book_append_sheet(wb, ws2, "نتائج التقييم التفصيلي");
+    XLSX.utils.book_append_sheet(wb, ws3, "ملخص نتائج المجالات");
+    XLSX.utils.book_append_sheet(wb, ws4, "الملاحظات والتوصيات المجمعة");
+    XLSX.writeFile(wb, "تقرير_التدقيق_الشامل.xlsx");
+  };
+
+
+  const exportToWord = () => {
+      let htmlContent = `
+        <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+        <head><meta charset='utf-8'><title>Export HTML To Doc</title>
+        <style> body { font-family: 'Arial', sans-serif; direction: rtl; } table { border-collapse: collapse; width: 100%; } th, td { border: 1px solid #dddddd; text-align: right; padding: 8px; } th { background-color: #f59e0b; color: white; } </style>
+        </head><body><h1>ملخص الملاحظات والتوصيات</h1>
+        <table><thead><tr><th>المعيار</th><th>اسم المعيار</th><th>نص المعيار</th><th>متوسط التقييم</th><th>الملاحظات</th><th>التوصيات</th></tr></thead><tbody>`;
+      Object.values(aggregatedNotes).forEach((group) => {
+          htmlContent += `<tr><td>${group.standardNo}</td><td>${group.standardName}</td><td>${group.standardText}</td><td>${group.averageScore.toFixed(2)}</td><td>${group.notes.join('<br>')}</td><td>${group.recommendations.join('<br>')}</td></tr>`;
+      });
+      htmlContent += "</tbody></table></body></html>";
+      const url = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(htmlContent);
+      const downloadLink = document.createElement("a");
+      document.body.appendChild(downloadLink);
+      downloadLink.href = url;
+      downloadLink.download = 'تقرير_التدقيق.doc';
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+  };
+
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'data': return <DataView data={data} onDataChange={handleDataChange} />;
+      case 'results': return <ChartsView processedData={processedData} isDarkMode={isDarkMode} />;
+      case 'details': return <DetailedResultsView processedData={processedData} />;
+      case 'notes': return <AggregatedNotesView aggregatedNotes={aggregatedNotes} />;
+      default: return null;
+    }
+  };
+  
+  return (
+    <div className="container">
+      <Header
+        onFileChange={handleFileChange}
+        onExportExcel={exportToExcel}
+        onExportWord={exportToWord}
+        onToggleDarkMode={() => setIsDarkMode(!isDarkMode)}
+        isLoading={isLoading}
+        isDarkMode={isDarkMode}
+      />
+      <main>
+        <Tabs activeTab={activeTab} onTabClick={setActiveTab} />
+        <div className="tab-content">
+          {renderTabContent()}
+        </div>
+      </main>
+    </div>
+  );
+};
+
+const rootElement = document.getElementById('root');
+if (rootElement) {
+    const root = ReactDOM.createRoot(rootElement);
+    root.render(
+        <React.StrictMode>
+            <App />
+        </React.StrictMode>
+    );
+}
+  </script>
+</body>
+
+</html>
